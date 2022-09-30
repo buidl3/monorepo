@@ -1,0 +1,52 @@
+{
+  "name": "@buidl3/core",
+  "version": "0.0.0",
+  "description": "buidl3",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "clean": "rimraf lib types",
+    "build": "tsc -p .",
+    "test": "jest --maxWorkers 2",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "watch": "watch \"npm run build\" ./src",
+    "prettier": "prettier --ignore-path .gitignore --write \"src/**/*.{ts,js}\"",
+    "prettier:diff": "prettier -l \"src/**/*.{ts,js}\"",
+    "tslint": "tslint \"src/**/*.ts\" -t verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buidl3/core.git"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.6",
+    "@types/node": "^18.7.3",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "tslint": "^5.20.1",
+    "tslint-config-common": "^1.6.2",
+    "typescript": "^4.7.4"
+  },
+  "engines": {
+    "node": ">= 16.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@ethereumjs/block": "^3.6.3",
+    "@ethereumjs/blockchain": "^5.5.3",
+    "@ethereumjs/common": "^2.6.5",
+    "@ethereumjs/devp2p": "^4.2.2",
+    "@ethereumjs/util": "^8.0.0-beta.1",
+    "ethers": "^5.6.9",
+    "glob": "^8.0.3",
+    "pg-listen": "^1.7.0",
+    "slonik": "^30.1.2"
+  }
+}
