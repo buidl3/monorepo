@@ -13,11 +13,11 @@ export class EthersProvider implements Buidl3Provider {
   network: Network;
   provider: ethers.providers.WebSocketProvider;
 
-  constructor(url: string, network: Network) {
+  constructor(network: Network) {
     this.network = network;
     this.provider = new ethers.providers.WebSocketProvider(
-      url,
-      network.chainIdBN().toNumber()
+      this.network.ethers?.ws!,
+      this.network.chain
     );
   }
 
@@ -118,7 +118,7 @@ export class EthersProvider implements Buidl3Provider {
       parent: block?.parentHash,
       number: block?.number,
       timestamp: block?.timestamp,
-      chain: this.provider.network.chainId,
+      chain: this.network.chain,
 
       raw: block,
     };
@@ -131,7 +131,7 @@ export class EthersProvider implements Buidl3Provider {
       index: event.logIndex,
       data: event.data,
       topics: event.topics,
-      chain: this.provider.network.chainId,
+      chain: this.network.chain,
 
       raw: event,
     };
@@ -152,22 +152,4 @@ function* nextBlocktick(
 
     yield [from, to];
   }
-}
-
-export async function create(networkId: string): Promise<EthersProvider> {
-  let network: Network;
-  try {
-    network = await import(process.cwd() + `/networks/${networkId}.config.js`);
-    if (!network) throw "Configuration not found";
-  } catch (error) {
-    throw "Network configuration " + networkId + ".config.js was not found!";
-  }
-
-  const { ethers } = network;
-  if (!ethers?.ws) throw "Provider URL was not provided!";
-
-  return new EthersProvider(
-    ethers?.ws as string,
-    network
-  );
 }

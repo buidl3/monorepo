@@ -11,11 +11,10 @@ export function getNetworks(): Array<string> {
   return paths.map(path => [...(path.matchAll(test))][0][2]);
 }
 
-export function getNetworkEnv(): Object {
+export function getNetworkEnv(): any {
   if (typeof process.env.__BUIDL3_NETWORK === "undefined")
-    throw "__BUIDL3_NETWORK was not set";
+    throw "__BUIDL3_NETWORK variable needs to be present to run, exiting...";
 
   return decode(process.env.__BUIDL3_NETWORK);
 }
 
-export * from "./web3/Network";

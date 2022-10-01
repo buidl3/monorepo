@@ -1,5 +1,6 @@
 import type { IRehydratable, Extra } from "../db/Concepts";
 import type { Buidl3Database } from "../db/Connection";
+import type { Network } from "./Network";
 import type { ethers } from "ethers";
 
 export interface Block {
@@ -35,7 +36,7 @@ interface EventFilter extends ethers.providers.Filter {
 
 export interface IContract extends IRehydratable {
   id: string;
-  chain: number;
+  network: Network;
 
   address?: string;
   genesis?: number;

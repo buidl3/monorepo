@@ -1,10 +1,4 @@
-import Common, {
-  CommonOpts,
-  Chain,
-  Hardfork,
-  CustomCommonOpts,
-  CustomChain,
-} from "@ethereumjs/common";
+import type Common from "@ethereumjs/common";
 
 export interface EthersConfig {
   http?: string;
@@ -18,51 +12,23 @@ export interface EthersConfig {
 }
 
 export interface P2PConfig {
+  /** Ethereum-js common object **/
+  common: Common;
+
+  /** Maximum allowed peers, default 50 **/
   peers?: number;
 }
 
 export interface CLIConfig {
+  /** Default block skip when regenerating blocks **/
   skip?: number;
 }
 
-interface NetworkOpts {
+export interface Network {
   name: string;
-  chain: number | CustomChain;
+  chain: number;
 
-  common?: CustomCommonOpts;
   ethers?: EthersConfig;
   p2p?: P2PConfig;
   cli?: CLIConfig;
 }
-
-export { Chain, Hardfork };
-export interface Network extends Common {
-  ethers?: EthersConfig;
-  p2p?: P2PConfig;
-}
-
-export function createNetwork(config: NetworkOpts): Network {
-  const chain = typeof config?.chain === "object"
-    ? config.chain
-    : { chainId: config.chain };
-
-  const network = Common.custom(
-    {
-      name: config.name,
-      ...chain,
-    },
-    config?.common
-  );
-
-  network["meta"] = {
-    name: config?.name,
-    chain: config?.chain,
-  };
-
-  network["ethers"] = config?.ethers;
-  network["p2p"] = config?.p2p;
-  network["cli"] = config?.cli;
-
-  return network;
-}
-

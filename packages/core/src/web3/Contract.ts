@@ -1,4 +1,5 @@
 import type { IContract } from "./Concepts";
+import type { Network } from "./Network";
 
 export function rehydrate(data) {
   const contract = this as IContract;
@@ -14,9 +15,9 @@ export function rehydrate(data) {
 export class ContractBuilder<Contract extends IContract> {
   contract: Partial<Contract> = {};
 
-  constructor(id: string, chain: number) {
+  constructor(id: string, network: Network) {
     this.contract.id = id;
-    this.contract.chain = chain;
+    this.contract.network = network;
 
     this.contract.setup = async (db) => { };
     this.contract.refresh = async (db) => { };

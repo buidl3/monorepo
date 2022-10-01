@@ -20,11 +20,11 @@ export type Buidl3QueryMethods = {
 async function attach(contract: IContract) {
   const pool = this as Buidl3Database;
 
-  const { id = "", address = "", chain = -1, genesis = -1 } = contract;
+  const { id = "", network, address = "", genesis = -1 } = contract;
 
   await pool.query(sql`
     INSERT INTO contracts (ct_id, ct_chain, ct_address, ct_tx_top, ct_ev_top)
-    VALUES (${id}, ${chain}, ${address}, ${genesis}, ${genesis})
+    VALUES (${id}, ${network.chain}, ${address}, ${genesis}, ${genesis})
     ON CONFLICT DO NOTHING
   `);
 

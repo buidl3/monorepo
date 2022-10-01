@@ -4,12 +4,12 @@
   "description": "buidl3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "exports": {
     ".": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf lib types",
     "build": "tsc -p .",

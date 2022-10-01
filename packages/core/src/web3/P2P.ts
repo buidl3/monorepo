@@ -31,7 +31,8 @@ const PRIVATE_KEY = randomBytes(32);
 export class P2PProvider implements Buidl3Provider {
   dpt: DPT;
   rlpx: RLPx;
-  network: Common;
+  network: Network;
+  common: Common;
 
   events: EventEmitter;
   peers: Map<number, Peer>;
@@ -39,6 +40,7 @@ export class P2PProvider implements Buidl3Provider {
 
   constructor(network: Network) {
     this.network = network;
+    this.common = this.network.p2p?.common!;
 
     this.events = new EventEmitter();
     this.requests = new RequestManager();
@@ -56,14 +58,15 @@ export class P2PProvider implements Buidl3Provider {
       dpt: this.dpt,
       maxPeers: network.p2p?.peers || 50,
       capabilities: [ETH.eth66],
-      common: this.network,
+      common: this.common,
       remoteClientIdFilter: REMOTE_CLIENTID_FILTER,
     });
 
     this.dpt.on("error", (err) => { });
     this.rlpx.on("error", (err) => { });
 
-    const genesis = this.network.genesis();
+
+    const genesis = this.common.genesis();
 
     const current = { peerId: 0 };
     this.peers = new Map<number, Peer>();
@@ -117,7 +120,7 @@ export class P2PProvider implements Buidl3Provider {
   }
 
   private bootstrap() {
-    const nodes = this.network.bootstrapNodes();
+    const nodes = this.common.bootstrapNodes();
     const BOOTNODES = nodes.map((node) => {
       return {
         address: node.ip,
@@ -143,7 +146,7 @@ export class P2PProvider implements Buidl3Provider {
   }
 
   getChain(): number {
-    return this.network.chainIdBN().toNumber();
+    return this.network.chain;
   }
 
   getLatestBlock(): Promise<Block> {
@@ -295,7 +298,7 @@ export class P2PProvider implements Buidl3Provider {
   }
 
   public watchBlocks(onBlock): () => void {
-    const common = this.network;
+    const common = this.common;
     const current = {
       block: 1,
       parent: Buffer.from(
@@ -403,7 +406,7 @@ export class P2PProvider implements Buidl3Provider {
       parent: block.parentHash.toString("hex"),
       timestamp: block.timestamp.toNumber(),
       number: block.number.toNumber(),
-      chain: this.network.chainIdBN().toNumber(),
+      chain: this.network.chain,
       raw: block,
     };
   }
@@ -482,14 +485,3 @@ async function isValidBlock(block) {
   );
 }
 
-export async function create(networkId: string): Promise<P2PProvider> {
-  let network: Network;
-  try {
-    network = await import(process.cwd() + `/networks/${networkId}.config.js`);
-    if (!network) throw "Configuration not found";
-  } catch (error) {
-    throw "Network configuration " + networkId + ".config.js was not found!";
-  }
-
-  return new P2PProvider(network as Common);
-}
