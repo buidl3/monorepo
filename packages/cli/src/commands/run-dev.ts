@@ -26,7 +26,7 @@ const command: GluegunCommand = {
       ...(menv?.parsed ?? {})
     }
 
-    const exists = existsSync(cwd() + `/dist/modules/${module}/index.js`);
+    const exists = existsSync(cwd() + `/dist/modules/${$module}/index.js`);
     if (!exists) {
       print.error("Module does not exist!");
       process.exit(1);
