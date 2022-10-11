@@ -18,7 +18,7 @@ const command: GluegunCommand = {
     }
 
     const genv = dotenv.config({ path: cwd() + "/.env" });
-    const menv = dotenv.config({ path: cwd() + `/modules/${$module}` });
+    const menv = dotenv.config({ path: cwd() + `/modules/${$module}/.env` });
 
     const env = {
       __BUIDL3_NETWORK: process.env.__BUIDL3_NETWORK,
@@ -33,7 +33,7 @@ const command: GluegunCommand = {
     }
 
     try {
-      const subprocess = execa("node", [`dist/modules/${$module}`], { env });
+      const subprocess = execa("nodemon", [`dist/modules/${$module}`], { env });
       subprocess.stdout.pipe(process.stdout);
       subprocess.stderr.pipe(process.stderr);
 
