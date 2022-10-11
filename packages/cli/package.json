@@ -2,7 +2,7 @@
   "name": "@buidl3/cli",
   "version": "0.0.1",
   "description": "buidl3 CLI",
-  "private": true,
+  "private": false,
   "types": "build/types/types.d.ts",
   "bin": {
     "buidl3": "bin/buidl3"
