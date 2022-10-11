@@ -28,7 +28,6 @@ async function attach(contract: IContract) {
     ON CONFLICT DO NOTHING
   `);
 
-  await contract.setup?.(pool);
   await sync.call(this, contract);
 
   pool.realtime.notifications.on("ct_rehydrate", (payload) => {
