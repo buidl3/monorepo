@@ -20,6 +20,9 @@
     "bin"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "gluegun": "latest"
