@@ -1,3 +1,4 @@
+import type { Buidl3Database } from "../db/Connection";
 import type { IContract } from "./Concepts";
 import type { Network } from "./Network";
 
@@ -19,8 +20,9 @@ export class ContractBuilder<Contract extends IContract> {
     this.contract.id = id;
     this.contract.network = network;
 
-    this.contract.setup = async (db) => { };
-    this.contract.refresh = async (db) => { };
+    this.contract.setup = async (db: Buidl3Database) => { };
+    this.contract.destroy = async (db: Buidl3Database) => { };
+    this.contract.refresh = async (db: Buidl3Database) => { };
   }
 
   public setAddress(address: string) {

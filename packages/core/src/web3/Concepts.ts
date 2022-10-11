@@ -44,8 +44,12 @@ export interface IContract extends IRehydratable {
   // Contract-specific schemas and routines
   setup?: (db: Buidl3Database) => Promise<void>;
 
+  // Cleans up schemas and routines
+  destroy?: (db: Buidl3Database) => Promise<void>;
+
   // Refresh database schemas on event insert
   refresh?: (db: Buidl3Database) => Promise<void>;
+
 
   // Internals
   txTop?: number;
