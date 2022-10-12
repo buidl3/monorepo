@@ -10,15 +10,15 @@ export function decode(data) {
   return JSON.parse(Buffer.from(data || "", "base64").toString("utf8") || "{}");
 }
 
-export function injectGlobal() {
-  const env = dotenv.config({ path: cwd() + "/.env" });
+export function injectGlobal(dev = false) {
+  const env = dotenv.config({ path: cwd() + (dev ? "/.env.dev" : "/.env") });
 
   const encoded = encode(JSON.stringify(env?.parsed ?? {}));
   process.env.__BUIDL3_ENV = encoded;
 }
 
-export function injectNetwork() {
-  const content = readFileSync(cwd() + "/networks/.env");
+export function injectNetwork(dev = false) {
+  const content = readFileSync(cwd() + "/networks" + (dev ? '/.env.dev' : '/.env'));
   const env = dotenv.parse(content);
 
   const encoded = encode(JSON.stringify(env ?? {}));
