@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import { cwd } from "process";
+import { readFileSync } from "fs";
 
 import { encode, decode } from "../env";
 
@@ -29,10 +30,11 @@ module.exports = toolbox => {
 
       return modules;
     },
-    getModuleEnv: (module) => {
-      const env = dotenv.parse(cwd() + `/modules/${module}/.env`);
-      const __BUIDL3_MODULE = encode(JSON.stringify(env ?? {}));
+    getModuleEnv: ($module) => {
+      const content = readFileSync(cwd() + `/modules/${$module}/.env`);
+      const env = dotenv.parse(content);
 
+      const __BUIDL3_MODULE = encode(JSON.stringify(env ?? {}));
       return {
         __BUIDL3_ENV: process.env.__BUIDL3_ENV,
         __BUIDL3_NETWORK: process.env.__BUIDL3_NETWORK,
