@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import { cwd } from "process";
+import { readFileSync } from "fs";
 
 export function encode(data) {
   return Buffer.from(data || "", "utf8").toString("base64");
@@ -11,13 +12,15 @@ export function decode(data) {
 
 export function injectGlobal() {
   const env = dotenv.config({ path: cwd() + "/.env" });
-  process.env = { ...process.env, ...(env?.parsed ?? {}) };
+
+  const encoded = encode(JSON.stringify(env?.parsed ?? {}));
+  process.env.__BUIDL3_ENV = encoded;
 }
 
 export function injectNetwork() {
-  const env = dotenv.config({ path: cwd() + "/networks/.env" });
-  const encoded = encode(JSON.stringify(env?.parsed ?? {}));
-  process.env.__BUIDL3_NETWORK = encoded;
+  const content = readFileSync(cwd() + "/networks/.env");
+  const env = dotenv.parse(content);
 
-  return encoded;
+  const encoded = encode(JSON.stringify(env ?? {}));
+  process.env.__BUIDL3_NETWORK = encoded;
 }
