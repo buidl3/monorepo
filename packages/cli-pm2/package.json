@@ -1,6 +1,6 @@
 {
   "name": "@buidl3/cli-pm2",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "PM2 plugin for Buidl3 CLI",
   "types": "buidl/types/types.d.ts",
   "scripts": {
