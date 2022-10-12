@@ -1,0 +1,21 @@
+{
+  "name": "@buidl3/cli-pm2",
+  "version": "0.0.1",
+  "description": "PM2 plugin for Buidl3 CLI",
+  "types": "buidl/types/types.d.ts",
+  "scripts": {
+    "clean-build": "rm -rf ./build",
+    "compile": "tsc -p .",
+    "build": "npm run clean-build && npm run compile",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "gluegun": "^5.1.2",
+    "ssh2": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.8.4",
+    "typescript": "^4.8.4"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": false,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "sourceMap": false,
+    "inlineSourceMap": true,
+    "outDir": "build",
+    "strict": false,
+    "target": "es6",
+    "declaration": true,
+    "declarationDir": "build/types",
+    "noUnusedParameters": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
