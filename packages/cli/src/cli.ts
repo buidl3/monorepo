@@ -11,6 +11,7 @@ async function run(argv) {
     .brand('buidl3')
     .src(__dirname)
     .plugins(cwd(), { matching: "cli" })
+    .plugins("node_modules/@buidl3", { matching: "cli-*" })
     .help()
     .version()
     .defaultCommand()
