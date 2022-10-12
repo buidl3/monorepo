@@ -9,6 +9,11 @@
     "build": "npm run clean-build && npm run compile",
     "prepublishOnly": "npm run build"
   },
+  "files": [
+    "README.md",
+    "build",
+    "LICENSE"
+  ],
   "license": "ISC",
   "dependencies": {
     "gluegun": "^5.1.2",
