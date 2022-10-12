@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": false,
-    "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noImplicitThis": false,
     "noUnusedLocals": false,
+    "rootDir": "./src",
     "sourceMap": false,
     "inlineSourceMap": true,
     "outDir": "build",
