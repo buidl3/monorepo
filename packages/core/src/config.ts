@@ -16,3 +16,10 @@ export function getNetworkEnv(): any {
   return decode(process.env.__BUIDL3_NETWORK);
 }
 
+export function getModuleEnv(): any {
+  if (typeof process.env.__BUIDL3_MODULE === "undefined")
+    throw "__BUIDL3_MODULE variable needs to be present to run, exiting...";
+
+  return decode(process.env.__BUIDL3_MODULE);
+}
+

@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { cwd } from "process";
 
-import { decode } from "../env";
+import { encode, decode } from "../env";
 
 module.exports = toolbox => {
   toolbox.buidl3 = {
@@ -30,15 +30,13 @@ module.exports = toolbox => {
       return modules;
     },
     getModuleEnv: (module) => {
-      const genv = dotenv.parse(cwd() + "/.env");
-      const menv = dotenv.parse(cwd() + `/modules/${module}/.env`);
+      const env = dotenv.parse(cwd() + `/modules/${module}/.env`);
+      const __BUIDL3_MODULE = encode(JSON.stringify(env ?? {}));
 
       return {
         __BUIDL3_ENV: process.env.__BUIDL3_ENV,
         __BUIDL3_NETWORK: process.env.__BUIDL3_NETWORK,
-        ...decode(process.env.__BUIDL3_ENV),
-        ...(genv ?? {}),
-        ...(menv ?? {})
+        __BUIDL3_MODULE,
       }
     }
   }

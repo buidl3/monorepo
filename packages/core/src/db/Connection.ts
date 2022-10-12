@@ -1,3 +1,5 @@
+import * as Config from "../config";
+
 import type { DatabasePool } from "slonik";
 import { createPool } from "slonik";
 
@@ -11,7 +13,7 @@ export type Buidl3Database = DatabasePool &
   Buidl3QueryMethods & { realtime: Buidl3Subscriber };
 
 export async function create(url?: string): Promise<Buidl3Database> {
-  if (!url) url = process.env.DB_CONNECT as string;
+  if (!url) url = Config.getEnv()['DB_CONNECT'] as string;
   if (!url) throw "No DB_CONNECT variable was set!";
 
   const pool = await createPool(url, {
