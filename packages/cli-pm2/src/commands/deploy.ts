@@ -3,16 +3,18 @@ import { cwd } from "process";
 
 const command: GluegunCommand = {
   name: "pm2:deploy",
-  description: "Deploys modules to production",
+  description: "Deploys modules to production: --host --port (default: 22) --user --key (defaults: ~/.ssh/id_rsa)",
   run: async (toolbox) => {
     const { print, parameters, system, buidl3 } = toolbox;
+
+    const cron = await import("cron-validate").then(m => m.default);
 
     if (process.env.__BUIDL3_MODE === "development") {
       print.error("Cannot deploy in development mode, exiting...");
       process.exit(1);
     }
 
-    const { host, port = 22, user, key = null } = parameters.options;
+    const { host, port = 22, user, key = "~/.ssh/id_rsa" } = parameters.options;
 
     if (!host || !user || !key) {
       print.error("Please provide --host, --user and --key");
@@ -69,7 +71,7 @@ const command: GluegunCommand = {
           if (err) throw err;
           stream.pipe(process.stdout);
 
-          stream.on('close', () => {
+          stream.on('exit', () => {
             print.success("Installed dependencies!");
             resolve(true);
           });
@@ -85,11 +87,13 @@ const command: GluegunCommand = {
           stream.on('close', () => {
             print.success("Uploaded dist successfully!");
 
-            connection.exec('tar -xf dist.tar && rm dist.tar', (err, status) => {
+            connection.exec('tar -xf dist.tar && rm dist.tar', (err, stream) => {
               if (err) throw err;
-              print.success("Extracted dist!");
 
-              resolve(true);
+              stream.on('exit', () => {
+                print.success("Extracted dist!");
+                resolve(true);
+              });
             });
           });
         });
@@ -101,20 +105,24 @@ const command: GluegunCommand = {
 
       print.info('Stopping and deleting old modules...');
       await new Promise(resolve => {
-        connection.exec('pm2 stop all', (err, _) => {
+        connection.exec('pm2 stop all', (err, stream) => {
           if (err) throw err;
-          print.success('Stopped old modules!');
 
-          resolve(true);
+          stream.on('exit', () => {
+            print.success('Stopped old modules!');
+            resolve(true);
+          })
         });
       });
 
       await new Promise(resolve => {
-        connection.exec('pm2 delete all', (err, _) => {
+        connection.exec('pm2 delete all', (err, stream) => {
           if (err) throw err;
-          print.success('Deleted old modules!');
 
-          resolve(true);
+          stream.on('exit', () => {
+            print.success('Deleted old modules!');
+            resolve(true);
+          });
         });
       });
 
@@ -122,14 +130,48 @@ const command: GluegunCommand = {
         const path = `dist/modules/${$module}`;
         const env = buidl3.getModuleEnv($module);
 
+        let config: any = {
+          "restart": false,
+          "cron": null
+        }
+
+        try {
+          config = {
+            ...config,
+            ...JSON.parse(readFileSync(cwd() + `/modules/${$module}/pm2.json`, 'utf-8'))
+          }
+        } catch (error) {
+          console.log('no pm2.json found');
+        }
+
+        if (config.cron && !cron(config.cron).isValid()) {
+          print.warning(`${$module}: Incorrect cron format, skipping...`);
+          continue;
+        }
+
+        const args = [
+          "pm2",
+          "start", path,
+          "--name", $module,
+          "--time",
+          config.restart === false ? "--no-autorestart" : '',
+          config.cron ? `--cron-restart="${config?.cron}"` : '',
+          config.cron ? " && pm2 stop " + $module : ''
+        ];
+
         await new Promise(resolve => {
-          connection.exec(
-            `pm2 start ${path} --name ${$module} --time`,
-            { env }, (err, _) => {
+          connection.exec(args.join(' '),
+            { env }, (err, stream) => {
               if (err) throw err;
 
-              print.success(`Started ${$module} module!`);
-              resolve(true);
+              stream.on('exit', () => {
+                if (config.cron)
+                  print.success(`Deployed ${$module} module!`);
+                else
+                  print.success(`Started ${$module} module!`);
+                resolve(true);
+              })
+
             });
         });
       }

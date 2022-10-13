@@ -16,6 +16,7 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "cron-validate": "^1.4.4",
     "gluegun": "^5.1.2",
     "ssh2": "^1.11.0",
     "tar": "^6.1.11"
