@@ -128,6 +128,7 @@ export class EthersProvider implements Buidl3Provider {
     return {
       block: event.blockNumber,
       blockHash: event.blockHash,
+      transactionHash: event.transactionHash,
       index: event.logIndex,
       data: event.data,
       topics: event.topics,

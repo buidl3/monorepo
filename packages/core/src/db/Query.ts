@@ -61,7 +61,7 @@ async function putBlock(block: Block, extra: Extra | null = null): Promise<boole
 
   await pool.query(sql`
     INSERT INTO blocks (bl_hash, bl_parent, bl_number, bl_timestamp, bl_chain, bl_extra, bl_raw)
-    VALUES (${block.hash}, ${block.parent}, ${block.number}, to_timestamp(${block.timestamp || null}), ${block.chain}, ${$extra}, ${$raw})
+    VALUES (${block.hash}, ${block.parent}, ${block.number}, to_timestamp(${block.timestamp!}), ${block.chain}, ${$extra}, ${$raw})
     ON CONFLICT (bl_number, bl_hash, bl_chain) DO UPDATE
     SET bl_extra = ${$extra}, bl_raw = ${$raw}
   `);
@@ -84,8 +84,8 @@ async function putEvent(event: Event, extra?: Extra): Promise<boolean> {
   const $raw = event?.raw ? JSON.stringify(event.raw) : null;
 
   await pool.query(sql`
-    INSERT INTO events (ev_block, ev_bhash, ev_index, ev_data, ev_topics, ev_chain, ev_extra, ev_raw)
-    VALUES (${event.block}, ${event.blockHash}, ${event.index}, ${event.data}, ${sql.array(event.topics, "text")}, ${event.chain}, ${$extra}, ${$raw})
+    INSERT INTO events (ev_block, ev_bhash, ev_txhash, ev_index, ev_data, ev_topics, ev_chain, ev_extra, ev_raw)
+    VALUES (${event.block}, ${event.blockHash}, ${event.transactionHash}, ${event.index}, ${event.data}, ${sql.array(event.topics, "text")}, ${event.chain}, ${$extra}, ${$raw})
     ON CONFLICT (ev_block, ev_bhash, ev_index, ev_chain) DO UPDATE
     SET ev_extra = ${$extra}, ev_raw = ${$raw}
   `);

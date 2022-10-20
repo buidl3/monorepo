@@ -20,6 +20,8 @@ export interface Event {
   block: number;
   blockHash: string;
 
+  transactionHash: string;
+
   index: number;
   topics: Array<string>;
   data: string;
