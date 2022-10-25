@@ -6,7 +6,7 @@ import type {
   EventCallback,
 } from "./Provider";
 
-import type { Block, Event } from "./Concepts";
+import type { Block, Event, Transaction } from "./Concepts";
 import { Network } from "./Network";
 
 import { BlockHeader } from "@ethereumjs/block";
@@ -376,6 +376,10 @@ export class P2PProvider implements Buidl3Provider {
     return () => {
       this.events.removeListener("peer:added", handlePeer);
     };
+  }
+
+  public getTransaction(hash: string): Promise<Transaction> {
+    throw "Not implemented";
   }
 
   public getEvents(

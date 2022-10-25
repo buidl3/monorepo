@@ -3,7 +3,7 @@ import type { DatabasePool, QueryResult, QueryResultRow } from "slonik";
 import { sql } from "slonik";
 
 import type { Extra } from "./Concepts";
-import type { IContract, Block, Event } from "../web3/Concepts";
+import type { IContract, Block, Transaction, Event } from "../web3/Concepts";
 import { rehydrate } from "../web3/Contract";
 
 export type Buidl3QueryMethods = {
@@ -11,6 +11,7 @@ export type Buidl3QueryMethods = {
   sync(contract: IContract): Promise<void>;
 
   putBlock(block: Block, extra?: Extra): Promise<boolean>;
+  putTransaction(transaction: Transaction, extra?: Extra): Promise<boolean>;
   putEvent(event: Event, extra?: Extra): Promise<boolean>;
 
   getContracts(): Promise<QueryResult<QueryResultRow>>;
@@ -77,6 +78,32 @@ async function getBlocks(from: number, to: number = Number.MAX_SAFE_INTEGER) {
   );
 }
 
+async function putTransaction(transaction: Transaction, extra?: Extra): Promise<boolean> {
+  const pool = this as Buidl3Database;
+
+  const $extra = extra ? JSON.stringify(extra) : '{}';
+  const $raw = transaction?.raw ? JSON.stringify(transaction.raw) : null;
+
+  await pool.query(sql`
+    INSERT INTO transactions (tx_hash, tx_index, tx_from, tx_to, tx_data, tx_block, tx_block_hash, tx_chain, tx_extra, tx_raw)
+    VALUES (
+      ${transaction.hash},
+      ${transaction.index},
+      ${transaction.from},
+      ${transaction.to || null},
+      ${transaction.data || null},
+      ${transaction.block},
+      ${transaction.blockHash},
+      ${transaction.chain},
+      ${$extra}, ${$raw}
+    )
+    ON CONFLICT(tx_block, tx_hash, tx_chain) DO UPDATE
+    SET tx_extra = ${$extra}, tx_raw = ${$raw}
+  `);
+
+  return true;
+}
+
 async function putEvent(event: Event, extra?: Extra): Promise<boolean> {
   const pool = this as Buidl3Database;
 
@@ -84,13 +111,13 @@ async function putEvent(event: Event, extra?: Extra): Promise<boolean> {
   const $raw = event?.raw ? JSON.stringify(event.raw) : null;
 
   await pool.query(sql`
-    INSERT INTO events (ev_block, ev_bhash, ev_txhash, ev_index, ev_data, ev_topics, ev_chain, ev_extra, ev_raw)
-    VALUES (${event.block}, ${event.blockHash}, ${event.transactionHash}, ${event.index}, ${event.data}, ${sql.array(event.topics, "text")}, ${event.chain}, ${$extra}, ${$raw})
-    ON CONFLICT (ev_block, ev_bhash, ev_index, ev_chain) DO UPDATE
+    INSERT INTO events(ev_block, ev_bhash, ev_txhash, ev_index, ev_data, ev_topics, ev_chain, ev_extra, ev_raw)
+    VALUES(${event.block}, ${event.blockHash}, ${event.transactionHash}, ${event.index}, ${event.data}, ${sql.array(event.topics, "text")}, ${event.chain}, ${$extra}, ${$raw})
+    ON CONFLICT(ev_block, ev_bhash, ev_index, ev_chain) DO UPDATE
     SET ev_extra = ${$extra}, ev_raw = ${$raw}
-  `);
+    `);
 
   return true;
 }
 
-export { attach, sync, getContracts, getBlocks, putBlock, putEvent };
+export { attach, sync, getContracts, getBlocks, putBlock, putTransaction, putEvent };

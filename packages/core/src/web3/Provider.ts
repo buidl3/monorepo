@@ -1,4 +1,4 @@
-import type { Block, Event } from "./Concepts";
+import type { Block, Transaction, Event } from "./Concepts";
 import { ethers } from "ethers";
 
 export type EventFilter = ethers.providers.Filter;
@@ -19,10 +19,12 @@ export interface Buidl3Provider {
   ): Promise<Array<Block>>;
   watchBlocks(onBlock: BlockCallback): CleanupFunc;
 
+  getTransaction(hash: string): Promise<Transaction>;
   getEvents(
     filter: EventFilter,
     from: number,
     to: number
   ): Promise<Array<Event>>;
   watchEvents(filter, onEvent: EventCallback): CleanupFunc;
+
 }

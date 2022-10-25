@@ -7,8 +7,8 @@ export interface Block {
   hash: string;
   parent: string;
 
-  number: number;
   chain: number;
+  number: number;
 
   timestamp?: number;
 
@@ -17,16 +17,31 @@ export interface Block {
 }
 
 export interface Event {
-  block: number;
-  blockHash: string;
+  index: number;
+  data: string;
+  topics: Array<string>;
 
   transactionHash: string;
 
+  chain: number;
+  block: number;
+  blockHash: string;
+
+  extra?: any;
+  raw?: any;
+}
+
+export interface Transaction {
+  hash: string;
   index: number;
-  topics: Array<string>;
+
+  from: string;
+  to?: string;
   data: string;
 
   chain: number;
+  block: number;
+  blockHash: string;
 
   extra?: any;
   raw?: any;

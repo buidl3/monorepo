@@ -4,7 +4,7 @@ import type {
   EventCallback,
   EventFilter,
 } from "./Provider";
-import type { Block, Event } from "./Concepts";
+import type { Block, Transaction, Event } from "./Concepts";
 
 import { Network } from "./Network";
 import { ethers } from "ethers";
@@ -68,6 +68,11 @@ export class EthersProvider implements Buidl3Provider {
     };
   }
 
+  async getTransaction(hash: string): Promise<Transaction> {
+    const transaction = await this.provider.getTransaction(hash);
+    return this.parseTransaction(transaction);
+  }
+
   async getEvents(
     filter: EventFilter,
     from: number,
@@ -122,6 +127,25 @@ export class EthersProvider implements Buidl3Provider {
 
       raw: block,
     };
+  }
+
+  public parseTransaction(transaction: ethers.providers.TransactionResponse): Transaction {
+    const { transactionIndex, data } = transaction as any;
+
+    return {
+      hash: transaction.hash,
+      index: transactionIndex,
+
+      from: transaction.from,
+      to: transaction.to,
+      data: transaction.data,
+
+      chain: this.network.chain,
+      block: transaction.blockNumber!,
+      blockHash: transaction.blockHash!,
+
+      raw: transaction
+    }
   }
 
   public parseEvent(event: ethers.providers.Log): Event {
