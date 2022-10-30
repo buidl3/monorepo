@@ -1,6 +1,7 @@
 import * as Config from "../config";
+const env = Config.getEnv();
 
-import type { DatabasePool } from "slonik";
+import type { ClientConfiguration, DatabasePool } from "slonik";
 import { createPool } from "slonik";
 
 import createSubscriber, { Subscriber } from "pg-listen";
@@ -8,21 +9,37 @@ import createSubscriber, { Subscriber } from "pg-listen";
 import type { Buidl3QueryMethods } from "./Query";
 import * as QueryMethods from "./Query";
 
+interface ConnectionOptions {
+  url?: string;
+  connectionName?: string;
+
+  client?: ClientConfiguration
+}
+
 export type Buidl3Subscriber = Subscriber<{ [channel: string]: any }>;
 export type Buidl3Database = DatabasePool &
   Buidl3QueryMethods & { realtime: Buidl3Subscriber };
 
-export async function create(url?: string): Promise<Buidl3Database> {
-  if (!url) url = Config.getEnv()['DB_CONNECT'] as string;
+export async function create(options?: ConnectionOptions): Promise<Buidl3Database> {
+  let { url, connectionName = null, client = {} } = options ?? {};
+  if (!url) url = env?.['DB_CONNECT'] as string;
   if (!url) throw "No DB_CONNECT variable was set!";
 
-  const pool = await createPool(url, {
-    statementTimeout: 600000
-  });
+  if (!connectionName) {
+    try {
+      const menv = Config.getModuleEnv();
+      connectionName = menv?.["DB_APPLICATION_NAME"];
+    } catch (error) { }
 
-  const subscriber = createSubscriber({
-    connectionString: url
-  });
+    if (!connectionName) connectionName = "Buidl3";
+  }
+
+  const pool = await createPool(
+    url + (connectionName ? `?application_name=${connectionName}` : ''),
+    { ...client, statementTimeout: 300000 }
+  );
+
+  const subscriber = createSubscriber({ connectionString: url });
 
   const notifications = subscriber.notifications;
   const subscribe = notifications.on;
