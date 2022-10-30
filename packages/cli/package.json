@@ -1,6 +1,6 @@
 {
   "name": "@buidl3/cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "buidl3 CLI",
   "types": "build/types/types.d.ts",
   "bin": {
