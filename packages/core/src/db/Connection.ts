@@ -36,7 +36,7 @@ export async function create(options?: ConnectionOptions): Promise<Buidl3Databas
 
   const pool = await createPool(
     url + (connectionName ? `?application_name=${connectionName}` : ''),
-    { ...client, statementTimeout: 300000 }
+    { statementTimeout: 300000, ...client }
   );
 
   const subscriber = createSubscriber({ connectionString: url });
