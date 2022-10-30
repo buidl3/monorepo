@@ -31,12 +31,14 @@ module.exports = toolbox => {
       return modules;
     },
     getModuleEnv: ($module) => {
-      let env = {};
+      let env = { DB_APPLICATION_NAME: $module };
 
       try {
         const content = readFileSync(cwd() + `/modules/${$module}/.env`);
         env = dotenv.parse(content);
       } catch (error) { }
+
+      if (!env?.DB_APPLICATION_NAME) env.DB_APPLICATION_NAME = $module;
 
       const __BUIDL3_MODULE = encode(JSON.stringify(env ?? {}));
       return {
