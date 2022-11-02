@@ -34,12 +34,16 @@ export async function create(options?: ConnectionOptions): Promise<Buidl3Databas
     if (!connectionName) connectionName = "Buidl3";
   }
 
+  const connectionString = url + (connectionName ? `?application_name=${connectionName}` : '');
+
   const pool = await createPool(
-    url + (connectionName ? `?application_name=${connectionName}` : ''),
+    connectionString,
     { statementTimeout: 300000, ...client }
   );
 
-  const subscriber = createSubscriber({ connectionString: url });
+  const subscriber = createSubscriber({
+    connectionString: connectionString + ":notify"
+  });
 
   const notifications = subscriber.notifications;
   const subscribe = notifications.on;
